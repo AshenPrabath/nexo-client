@@ -1,38 +1,31 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import ProductCard from '../Components/ProductCard';
 import Header from '../Components/Header';
+import { getProducts } from '../Services/ProductService';
+import Footer from '../Components/Footer';
 
 const ShopPage = () => {
-  const products = [
-    {
-      id: 1,
-      name: 'Nike Air Max',
-      price: '$120.00',
-      image: 'https://example.com/nike-air-max.jpg',
-      description: 'A modern take on the iconic Air Max series, featuring superior cushioning and a stylish design.'
-    },
-    {
-      id: 2,
-      name: 'Adidas Ultraboost',
-      price: '$140.00',
-      image: 'https://example.com/adidas-ultraboost.jpg',
-      description: 'Engineered for comfort and performance, the Ultraboost provides unparalleled support and energy return.'
-    },
-    {
-      id: 3,
-      name: 'Puma RS-X',
-      price: '$110.00',
-      image: 'https://example.com/puma-rsx.jpg',
-      description: 'Bold, retro-inspired design with durable materials, perfect for everyday wear and athletic activities.'
-    },
-    {
-      id: 4,
-      name: 'Reebok Classic',
-      price: '$90.00',
-      image: 'https://example.com/reebok-classic.jpg',
-      description: 'Timeless design and comfort in a classic silhouette, ideal for casual wear and retro styling.'
-    }
-  ];
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  const loadProducts = () =>{
+    getProducts().then(data => {
+      setProducts(data);
+      setLoading(false);
+    })
+    .catch(error => {
+      setError(error);
+      setLoading(false);
+    });
+  }
+  useEffect(() => {
+    loadProducts();
+    console.log(products);
+  }, []);
+
+  if (loading) return <p>Loading...</p>;
+  if (error) return <p>Error: {error.message}</p>;
   
   return (
     <>
@@ -43,6 +36,7 @@ const ShopPage = () => {
         {products.map((product) => (
           <ProductCard
             key={product.id}
+            id={product.id}
             name={product.name}
             price={product.price}
             image={product.image}
@@ -51,6 +45,7 @@ const ShopPage = () => {
         ))}
       </div>
     </div>
+    <Footer />
     </>
   );
 }

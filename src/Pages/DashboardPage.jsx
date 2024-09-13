@@ -3,6 +3,7 @@ import { Link, Route, Routes } from 'react-router-dom';
 import Overview from '../Components/Overview';
 import Products from '../Components/Products';
 import Orders from '../Components/Orders';
+import Customers from '../Components/Customers';
 
 const DashboardPage = () => {
     const [activeTab, setActiveTab] = useState ('Overview');
@@ -15,6 +16,8 @@ const DashboardPage = () => {
         return <Products />;
       case 'Orders':
         return <Orders />;
+        case 'Customers':
+        return <Customers />;
       default:
         return <Overview />;
     }
@@ -54,6 +57,16 @@ const DashboardPage = () => {
               onClick={() => setActiveTab('Orders')}
             >
               Orders
+            </button>
+          </li>
+          <li>
+            <button
+              className={`w-full text-left px-4 py-2 rounded-lg hover:bg-gray-700 transition ${
+                activeTab === 'Customers' ? 'bg-gray-700' : ''
+              }`}
+              onClick={() => setActiveTab('Customers')}
+            >
+              Customers
             </button>
           </li>
         </ul>

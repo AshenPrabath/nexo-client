@@ -55,7 +55,7 @@ const LoginPage = () => {
             Login
           </button>
           
-          <Link to="/home">
+          <Link to="/">
             <button
               type="button"
               className="w-full px-4 py-3 mt-2 text-gray-700 font-semibold text-sm rounded-lg hover:text-indigo-800 transition duration-300"

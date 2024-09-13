@@ -1,68 +1,117 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import { getOrders } from '../Services/OrderService';
+import { getOrderLineByID, orderLineByID } from '../Services/OrderLineService';
 
 const Orders = () => {
-  const orderStats = [
-    { id: 1, label: 'Total Orders', value: '1,215', description: 'All time' },
-    { id: 2, label: 'Pending Orders', value: '78', description: 'Awaiting fulfillment' },
-    { id: 3, label: 'Completed Orders', value: '1,120', description: 'All time' },
-    { id: 4, label: 'Refunded Orders', value: '17', description: 'All time' },
-  ];
+  const [orders, setOrders] = useState([]);
+  const [orderLine, setOrderLine] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [showDetailsModal, setShowDetailsModal] = useState(false);
+  const [selectedOrder, setSelectedOrder] = useState(null);
 
-  // Example detailed order data for the table
-  const ordersData = [
-    { id: '#12345', customer: 'John Doe', status: 'Completed', total: '$150.00' },
-    { id: '#12346', customer: 'Jane Smith', status: 'Pending', total: '$200.00' },
-    { id: '#12347', customer: 'Mark Johnson', status: 'Completed', total: '$80.00' },
-    { id: '#12348', customer: 'Anna Brown', status: 'Refunded', total: '$50.00' },
-  ];
+  useEffect(() => {
+    loadOrders();
+  }, []);
+
+  const loadOrders = () => {
+    getOrders()
+      .then(data => {
+        setOrders(data);
+        setLoading(false);
+      })
+      .catch(error => {
+        setError(error);
+        setLoading(false);
+      });
+  };
+  const loadOrderLine = (id) => {
+    getOrderLineByID(id)
+      .then(data => {
+        setOrderLine(data);
+        setLoading(false);
+      })
+      .catch(error => {
+        setError(error);
+        setLoading(false);
+      });
+  }
+
+  const handleViewDetails = (order) => {
+    setSelectedOrder(order);
+    loadOrderLine(order.id);
+    setShowDetailsModal(true);
+  };
+
+  
 
   return (
     <div>
       <h2 className="text-2xl font-bold mb-6">Orders Dashboard</h2>
 
-      {/* Order Stats Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {orderStats.map((stat) => (
-          <div
-            key={stat.id}
-            className="bg-white shadow-md rounded-lg p-6 text-center border border-gray-200"
-          >
-            <h3 className="text-xl font-semibold">{stat.label}</h3>
-            <p className="text-3xl font-bold my-4">{stat.value}</p>
-            <p className="text-gray-500">{stat.description}</p>
-          </div>
-        ))}
-      </div>
-
-      {/* Detailed Orders Table */}
+      {/* Orders Table */}
       <div className="bg-white shadow-lg rounded-lg p-6 border border-gray-200">
         <h3 className="text-xl font-bold mb-4">Orders Overview</h3>
         <table className="min-w-full bg-white">
           <thead>
             <tr className="w-full bg-gray-100 text-gray-600 uppercase text-sm leading-normal">
               <th className="py-3 px-6 text-left">Order ID</th>
-              <th className="py-3 px-6 text-left">Customer Name</th>
-              <th className="py-3 px-6 text-left">Status</th>
-              <th className="py-3 px-6 text-left">Total</th>
+              <th className="py-3 px-6 text-left">Reference</th>
+              <th className="py-3 px-6 text-left">Amount</th>
+              <th className="py-3 px-6 text-left">Payment Method</th>
+              <th className="py-3 px-6 text-left">Customer ID</th>
+              <th className="py-3 px-6 text-left">Actions</th>
             </tr>
           </thead>
           <tbody className="text-gray-600 text-sm">
-            {ordersData.map((order, index) => (
-              <tr
-                key={index}
-                className={`border-b border-gray-200 hover:bg-gray-100 ${
-                  order.status === 'Refunded' ? 'bg-red-100' : order.status === 'Pending' ? 'bg-yellow-100' : ''
-                }`}
-              >
+            {orders.map((order) => (
+              <tr key={order.id} className="border-b border-gray-200 hover:bg-gray-100">
                 <td className="py-3 px-6">{order.id}</td>
-                <td className="py-3 px-6">{order.customer}</td>
-                <td className="py-3 px-6">{order.status}</td>
-                <td className="py-3 px-6">{order.total}</td>
+                <td className="py-3 px-6">{order.reference}</td>
+                <td className="py-3 px-6">${order.amount.toFixed(2)}</td>
+                <td className="py-3 px-6">{order.paymentMethod}</td>
+                <td className="py-3 px-6">{order.customerId}</td>
+                <td className="py-3 px-6">
+                  <button
+                    onClick={() => handleViewDetails(order)}
+                    className="bg-blue-500 text-white py-1 px-4 rounded"
+                  >
+                    View Details
+                  </button>
+                </td>
               </tr>
             ))}
           </tbody>
         </table>
       </div>
+
+      {/* Details Modal */}
+      {showDetailsModal && selectedOrder && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center">
+          <div className="bg-white rounded-lg p-6 w-1/3">
+            <h2 className="text-xl font-bold mb-4">Order Details</h2>
+            <p><strong>Order ID:</strong> {selectedOrder.id}</p>
+            <p><strong>Reference:</strong> {selectedOrder.reference}</p>
+            <p><strong>Amount:</strong> ${selectedOrder.amount.toFixed(2)}</p>
+            <p><strong>Payment Method:</strong> {selectedOrder.paymentMethod}</p>
+            <p><strong>Customer ID:</strong> {selectedOrder.customerId}</p>
+            <div>
+              {orderLine.map((item)=>(
+                <p>{item.id} {console.log(item)}</p>
+              ))}
+            </div>
+
+            <div className="flex justify-end mt-4">
+              <button
+                onClick={() => setShowDetailsModal(false)}
+                className="py-2 px-4 bg-gray-300 text-gray-700 rounded"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
