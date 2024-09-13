@@ -1,4 +1,5 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 function Header() {
   return (
@@ -6,9 +7,8 @@ function Header() {
     <div className="container mx-auto px-4 py-4 flex justify-between items-center">
       <h1 className="text-xl font-bold">Nexo</h1>
       <nav className="space-x-4">
-        <a href="#shop" className="text-gray-600 hover:text-gray-900">Shop</a>
-        <a href="#about" className="text-gray-600 hover:text-gray-900">About Us</a>
-        <a href="#contact" className="text-gray-600 hover:text-gray-900">Contact</a>
+        <Link to="/shop" className="text-gray-600 hover:text-gray-900">Shop</Link>
+        <Link to="/login" className="text-gray-600 hover:text-gray-900">Login</Link>
       </nav>
     </div>
   </header>
