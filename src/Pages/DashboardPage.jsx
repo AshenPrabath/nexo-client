@@ -1,12 +1,13 @@
-import React, { useState } from 'react'
-import { Link, Route, Routes } from 'react-router-dom';
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import Overview from '../Components/Overview';
 import Products from '../Components/Products';
 import Orders from '../Components/Orders';
 import Customers from '../Components/Customers';
 
 const DashboardPage = () => {
-    const [activeTab, setActiveTab] = useState ('Overview');
+  const [activeTab, setActiveTab] = useState('Overview');
+  const navigate = useNavigate(); // Initialize useNavigate
 
   const renderContent = () => {
     switch (activeTab) {
@@ -16,19 +17,24 @@ const DashboardPage = () => {
         return <Products />;
       case 'Orders':
         return <Orders />;
-        case 'Customers':
+      case 'Customers':
         return <Customers />;
       default:
         return <Overview />;
     }
   };
 
+  const handleLogout = () => {
+    // Perform logout logic here (e.g., clearing tokens, etc.)
+    navigate('/'); // Redirect to /home after logout
+  };
+
   return (
     <div className="flex min-h-screen">
       {/* Sidebar */}
-      <nav className="w-64 bg-gray-800 text-white">
+      <nav className="w-64 bg-gray-800 text-white flex flex-col">
         <div className="p-4 text-2xl font-bold">Nexo Admin</div>
-        <ul className="space-y-2 p-4">
+        <ul className="space-y-2 p-4 flex-grow">
           <li>
             <button
               className={`w-full text-left px-4 py-2 rounded-lg hover:bg-gray-700 transition ${
@@ -70,6 +76,13 @@ const DashboardPage = () => {
             </button>
           </li>
         </ul>
+        {/* Logout button */}
+        <button
+          onClick={handleLogout}
+          className="w-full text-left px-4 mb-8  text-red-600 py-2 rounded-lg hover:bg-gray-700 transition mt-auto"
+        >
+          Logout
+        </button>
       </nav>
 
       {/* Main content area */}
@@ -81,4 +94,4 @@ const DashboardPage = () => {
   );
 }
 
-export default DashboardPage
+export default DashboardPage;
