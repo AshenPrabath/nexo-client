@@ -36,6 +36,7 @@ const ConfirmationPage = () => {
   
       // Submit the order (server may return 500, but data is saved)
       await createOrder(orderPayload);
+      console.log(orderPayload);
       
       // If we reach here, proceed to success regardless of backend response
       navigate('/success');
